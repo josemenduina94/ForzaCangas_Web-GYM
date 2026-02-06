@@ -40,7 +40,7 @@ export const TRAINERS: Trainer[] = [
     name: 'Javi Rico',
     specialty: 'HIIT Cross-Funcional',
     bio: 'Energía pura de Cangas. Especialista en WODs explosivos y acondicionamiento metabólico extremo.',
-    imageUrl: 'https://images.unsplash.com/photo-1507398941214-57f196f4ab3c?q=80&w=800&auto=format&fit=crop'
+    imageUrl: 'https://images.unsplash.com/photo-1639496908204-6f949b0f46e1?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8SW5zdHJ1Y3RvciUyMGRlJTIwZml0bmVzc3xlbnwwfHwwfHx8MA%3D%3D'
   }
 ];
 
