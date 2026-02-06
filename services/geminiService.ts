@@ -1,7 +1,7 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
 export async function generateFitnessAdvice(goal: string, activityLevel: string) {
   const prompt = `Actúa como un entrenador personal de élite en España. Proporciona un consejo de entrenamiento corto y motivador de máximo 3 frases para alguien cuyo objetivo es "${goal}" y su nivel de actividad actual es "${activityLevel}". Responde siempre en español y sé muy profesional.`;
