@@ -40,13 +40,25 @@ export async function generateFitnessAdvice(goal: string, activityLevel: string)
 }
 
 export async function generateGoalVisual(goal: string) {
-  // Fotos fijas de alta calidad para que no falle nada
-  if (goal.toLowerCase().includes('musculo')) {
-    return 'https://images.unsplash.com/photo-1583454110551-21f2fa2adfcd?auto=format&fit=crop&q=80&w=1000';
+  const g = goal.toLowerCase();
+  
+  // Usamos imágenes de alta calidad de Pexels que cargan siempre bien
+  if (g.includes('musculo') || g.includes('ganar') || g.includes('fuerza')) {
+    return 'https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=800'; // Pesas y músculos
   }
-  return 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=1000';
+  
+  if (g.includes('grasa') || g.includes('perder') || g.includes('adelgazar')) {
+    return 'https://images.pexels.com/photos/1552249/pexels-photo-1552249.jpeg?auto=compress&cs=tinysrgb&w=800'; // Entrenamiento intenso
+  }
+
+  if (g.includes('comida') || g.includes('dieta') || g.includes('nutricion')) {
+    return 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800'; // Nutrición saludable
+  }
+
+  // Imagen por defecto del box si no detecta palabra clave
+  return 'https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg?auto=compress&cs=tinysrgb&w=800';
 }
 
 export async function generateHeroImage() {
-  return 'https://images.unsplash.com/photo-1593079831268-3381b0db4a77?auto=format&fit=crop&q=80&w=1920';
+  return 'https://images.pexels.com/photos/949126/pexels-photo-949126.jpeg?auto=compress&cs=tinysrgb&w=1920';
 }
