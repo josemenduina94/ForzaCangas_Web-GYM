@@ -1,7 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 
 // Configuración profesional para Vercel
-const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+const genai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
 export async function generateFitnessAdvice(goal: string, activityLevel: string) {
   const prompt = `Actúa como el Head Coach de Forza Cangas, un experto con 20 años de experiencia en entrenamiento de élite, biomecánica y nutrición deportiva avanzada.
