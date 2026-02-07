@@ -23,11 +23,14 @@ const AIConsultant: React.FC = () => {
     
     setLoading(true);
     try {
+      // Usamos Promise.all para ejecutar ambas llamadas en paralelo y ahorrar tiempo
       const [advice, image] = await Promise.all([
         generateFitnessAdvice(targetGoal, level),
         generateGoalVisual(targetGoal)
       ]);
       setResult({ advice, image });
+    } catch (err) {
+      console.error("Error al generar plan:", err);
     } finally {
       setLoading(false);
     }
@@ -37,10 +40,11 @@ const AIConsultant: React.FC = () => {
     <section id="ai-consult" className="py-24 bg-zinc-900/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-start">
+          {/* Formulario a la IZQUIERDA */}
           <div className="lg:sticky lg:top-24">
             <h2 className="text-4xl font-black mb-6 uppercase tracking-tighter">Coach de Rendimiento <span className="text-red-500">AI</span></h2>
-            <p className="text-zinc-400 mb-8 text-lg">
-              Nuestro motor de inteligencia deportiva genera planes únicos. No son plantillas: es ciencia de datos aplicada a tu objetivo.
+            <p className="text-zinc-400 mb-8 text-lg leading-relaxed">
+              Nuestro motor de inteligencia deportiva genera planes precisos basados en tu nivel real. Obtén consejos profesionales en segundos.
             </p>
             
             <form onSubmit={handleSubmit} className="space-y-6 glass-morphism p-8 rounded-[2.5rem] border border-red-500/20 shadow-2xl mb-8">
@@ -51,7 +55,7 @@ const AIConsultant: React.FC = () => {
                   type="text" 
                   value={goal}
                   onChange={(e) => setGoal(e.target.value)}
-                  placeholder="Ej: Powerlifting avanzado, definición..."
+                  placeholder="Ej: Preparar una maratón, hipertrofia..."
                   className="w-full bg-zinc-800 border border-white/5 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all text-white font-medium"
                 />
               </div>
@@ -91,11 +95,11 @@ const AIConsultant: React.FC = () => {
                 {loading ? (
                   <>
                     <i className="fas fa-spinner fa-spin"></i>
-                    <span>Analizando Variables Técnicas...</span>
+                    <span>Analizando Variables...</span>
                   </>
                 ) : (
                   <>
-                    <i className="fas fa-brain"></i>
+                    <i className="fas fa-bolt"></i>
                     <span>Generar Plan Maestro</span>
                   </>
                 )}
@@ -103,7 +107,8 @@ const AIConsultant: React.FC = () => {
             </form>
           </div>
           
-          <div className="min-h-[600px] flex items-start justify-center">
+          {/* Visualización a la DERECHA */}
+          <div className="min-h-[500px] flex items-start justify-center">
             {result ? (
               <div className="space-y-6 animate-fade-in w-full">
                 <div className="relative group overflow-hidden rounded-[2.5rem] aspect-video shadow-2xl border border-white/10">
@@ -118,9 +123,9 @@ const AIConsultant: React.FC = () => {
                   <div className="flex items-center justify-between mb-8 border-b border-white/5 pb-6">
                     <div>
                       <h3 className="text-xl font-black uppercase tracking-widest text-red-500">FORZA MASTER PLAN</h3>
-                      <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Generado automáticamente para nivel {level}</p>
+                      <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Estrategia para nivel {level}</p>
                     </div>
-                    <i className="fas fa-bolt text-red-500 text-2xl"></i>
+                    <i className="fas fa-brain text-red-500 text-2xl"></i>
                   </div>
                   
                   <div className="text-zinc-200 text-base md:text-lg font-medium leading-relaxed whitespace-pre-line custom-scrollbar">
@@ -133,9 +138,9 @@ const AIConsultant: React.FC = () => {
                 <div className="bg-zinc-800 w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner transform group-hover:scale-110 transition-transform border border-white/5">
                   <i className="fas fa-robot text-5xl text-red-500"></i>
                 </div>
-                <h3 className="text-3xl font-black mb-4 uppercase tracking-tight">Análisis en Espera</h3>
+                <h3 className="text-3xl font-black mb-4 uppercase tracking-tight">Tu transformación inicia aquí</h3>
                 <p className="text-zinc-500 max-w-sm mx-auto text-lg leading-relaxed">
-                  Completa el formulario de la izquierda. Nuestra IA procesará tu nivel y objetivos para entregarte una hoja de ruta técnica completa.
+                  Utiliza el formulario de la izquierda para generar una visualización realista de tus objetivos y recibir consejos personalizados detallados.
                 </p>
               </div>
             )}
