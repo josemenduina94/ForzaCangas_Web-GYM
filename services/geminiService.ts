@@ -1,7 +1,7 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
 export async function generateFitnessAdvice(goal: string, activityLevel: string) {
   // Prompt refinado para ser directo, en español puro y sin encabezados de cierre.
