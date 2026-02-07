@@ -1,7 +1,7 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, HarmCategory, HarmBlockThreshold } from "@google/genai";
 
-// Configuración profesional para Vercel
-const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+// 1. Inicialización corregida (usamos 'genAI' para que coincida con el código de abajo)
+const genAI = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
 export async function generateFitnessAdvice(goal: string, activityLevel: string) {
   const prompt = `Actúa como el Head Coach de Forza Cangas, un experto con 20 años de experiencia en entrenamiento de élite, biomecánica y nutrición deportiva avanzada.
@@ -23,20 +23,31 @@ export async function generateFitnessAdvice(goal: string, activityLevel: string)
   - Evita el uso excesivo de negritas.`;
 
   try {
-    // Usamos el modelo 1.5-flash que es el más estable para entornos web
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    // 2. Usamos el mismo nombre 'genAI' y añadimos configuración de seguridad
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash",
+      safetySettings: [
+        { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+        { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+        { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+        { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+      ],
+    });
+
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    return response.text();
+    const text = response.text();
+
+    if (!text) throw new Error("No se generó texto");
+    return text;
+
   } catch (error) {
     console.error("Error en el Coach:", error);
-    return "En Forza Cangas forjamos versiones imparables. El sistema está ajustando tu plan de élite, ¡hablemos en el box para empezar hoy mismo!";
+    return "En Forza Cangas forjamos versiones imparables. El sistema está ajustando tu plan de élite, ¡reintenta o hablemos en el box para empezar hoy mismo!";
   }
 }
 
 export async function generateGoalVisual(goal: string) {
-  // Nota: El modelo Flash no genera imágenes directamente, 
-  // así que devolvemos una foto de alta calidad de stock relacionada con el gimnasio
   return 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=1200';
 }
 
