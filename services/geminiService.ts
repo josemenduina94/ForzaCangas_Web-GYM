@@ -1,10 +1,10 @@
 import { GoogleGenAI, HarmCategory, HarmBlockThreshold } from "@google/genai";
 
-// 1. Inicialización ultra-segura
-const genAI = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
-
 export async function generateFitnessAdvice(goal: string, activityLevel: string) {
-  // 2. Simplificamos el prompt un poco para descartar que sea por exceso de texto
+  // 1. Inicializamos la llave DENTRO de la función para evitar el error de "TR"
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  const genAI = new GoogleGenAI(apiKey);
+
   const prompt = `Actúa como el Head Coach de Forza Cangas. 
   Cliente nivel: ${activityLevel}. Objetivo: ${goal}.
   
@@ -18,6 +18,7 @@ export async function generateFitnessAdvice(goal: string, activityLevel: string)
   Responde en ESPAÑOL, con tono épico y profesional.`;
 
   try {
+    // 2. Usamos directamente el modelo aquí
     const model = genAI.getGenerativeModel({ 
       model: "gemini-1.5-flash",
       safetySettings: [
@@ -29,21 +30,16 @@ export async function generateFitnessAdvice(goal: string, activityLevel: string)
     });
 
     const result = await model.generateContent(prompt);
-    
-    // 3. Verificación de seguridad
-    if (!result || !result.response) {
-      throw new Error("No hay respuesta del modelo");
-    }
-
     const response = await result.response;
-    return response.text();
+    const text = response.text();
+
+    if (!text) throw new Error("Respuesta vacía");
+    return text;
 
   } catch (error: any) {
-    // Esto imprimirá el error real en la consola de tu navegador (F12)
-    console.error("ERROR DETALLADO:", error);
-    
-    // Si el error dice "API_KEY_INVALID", es que la llave está mal copiada
-    return `Error técnico: ${error.message || 'Consulta la consola'}. En Forza Cangas no nos rendimos, ¡reintenta!`;
+    console.error("Error detallado:", error);
+    // Si el error persiste, nos dirá exactamente por qué
+    return `Error técnico: ${error.message}. ¡Reintenta en Forza Cangas!`;
   }
 }
 
