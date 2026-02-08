@@ -1,74 +1,88 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-/**
- * Genera un plan de entrenamiento personalizado utilizando el modelo Gemini 3 Flash.
- * El SDK requiere que la API Key se pase en un objeto de configuración.
- */
 export async function generateFitnessAdvice(goal: string, activityLevel: string) {
   try {
-    // Obtenemos la clave de process.env.API_KEY según las directrices del sistema.
-    const apiKey = process.env.API_KEY;
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
-    if (!apiKey) {
-      console.warn("API_KEY no detectada. Usando plan de respaldo profesional.");
-      return getFallbackAdvice(goal, activityLevel);
-    }
-
-    const ai = new GoogleGenAI({ apiKey });
-    
-    const prompt = `Actúa como el Head Coach de Forza Cangas.
+    const prompt = `Actúa como el Head Coach de Forza Cangas (Cangas do Morrazo).
     ATLETA: Nivel ${activityLevel}. 
     OBJETIVO: ${goal}.
 
     Genera un plan estratégico profesional de aproximadamente 180 palabras.
     
     REGLAS ESTRICTAS DE CONTENIDO:
-    1. ANÁLISIS TÉCNICO: Evaluación para nivel ${activityLevel}.
-    2. PROGRAMA FORZA: Define 3 pilares clave. PROHIBIDO usar la palabra 'Metcons'. Usa 'Circuitos de Alta Intensidad'.
-    3. NUTRICIÓN: Un consejo clave para: ${goal}.
-    4. MENSAJE FINAL: Termina con una frase potente y motivadora de Cangas. SIN etiquetas de sección.
+    1. ANÁLISIS TÉCNICO: Proporcione una evaluación técnica específica para el nivel ${activityLevel}.
+    2. PROGRAMA FORZA: Define 3 pilares clave del entrenamiento. PROHIBIDO usar la palabra 'Metcons'. Cámbiala por 'Acondicionamiento Metabólico' o 'Circuitos de Alta Intensidad'.
+    3. NUTRICIÓN: Incluye un consejo nutricional clave y práctico para lograr el objetivo: ${goal}.
+    4. MENSAJE FINAL: Termina con una frase potente y motivadora que refleje el espíritu de Cangas. NO incluyas encabezados como "MENSAJE FINAL:" ni títulos de sección. La frase debe ser el párrafo final del texto.
 
-    ESTILO: Español de España, tono experto y enérgico.`;
+    ESTILO: Español de España, tono experto, enérgico y profesional. No utilices anglicismos innecesarios.`;
 
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: prompt,
       config: {
-        temperature: 0.7,
-        topP: 0.95,
-      },
+        thinkingConfig: { thinkingBudget: 0 },
+        temperature: 0.75,
+      }
     });
 
-    // Acceso correcto a la propiedad .text (no es un método)
     const text = response.text;
+    if (!text) throw new Error("Respuesta vacía del modelo");
     
-    if (!text) throw new Error("Respuesta vacía");
     return text;
-
   } catch (error) {
     console.error("Error en Coach AI:", error);
-    return getFallbackAdvice(goal, activityLevel);
+    // Fallback de alta calidad que simula un plan profesional en caso de error de red/API
+    return `¡Atleta! En Forza Cangas nos tomamos tu objetivo de "${goal}" muy en serio. Para tu nivel ${activityLevel}, nuestra recomendación inmediata es priorizar la técnica en los movimientos básicos y programar tres sesiones semanales de alta intensidad. Pásate por el box de Cangas para que realicemos una evaluación biométrica completa y te entreguemos tu plan detallado en mano. ¡El cambio empieza en la arena de Cangas! ¡Fuerza!`;
   }
 }
 
-/**
- * Proporciona una respuesta de alta calidad si la API no está disponible inmediatamente.
- */
-function getFallbackAdvice(goal: string, level: string): string {
-  return `¡Atleta! En Forza Cangas nos tomamos tu objetivo de "${goal}" muy en serio. Para tu nivel ${level}, nuestra metodología se centra en la progresión de cargas y la optimización de la técnica base. 
-
-Aunque el Coach IA está analizando tu perfil detallado, te recomendamos empezar con tres sesiones semanales de fuerza funcional y priorizar el descanso activo. Pásate por el box en Cangas para que realicemos una evaluación presencial y te demos tu plan maestro en mano.
-
-¡El cambio real ocurre cuando decides empezar! ¡Fuerza!`;
-}
-
 export async function generateGoalVisual(goal: string) {
-  // Imagen de stock de alta calidad para asegurar estabilidad total en el despliegue
-  return 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=1200';
+  try {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const prompt = `Professional cinematic fitness photography of an athlete achieving ${goal} in a premium high-end gym, red neon lighting accents, industrial luxury style, 8k resolution.`;
+    
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash-image',
+      contents: { parts: [{ text: prompt }] },
+      config: { imageConfig: { aspectRatio: "16:9" } }
+    });
+
+    if (response.candidates?.[0]?.content?.parts) {
+      for (const part of response.candidates[0].content.parts) {
+        if (part.inlineData) {
+          return `data:image/png;base64,${part.inlineData.data}`;
+        }
+      }
+    }
+    return 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=1200';
+  } catch (error) {
+    console.error("Error visual:", error);
+    return 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=1200';
+  }
 }
 
 export async function generateHeroImage() {
-  // Imagen premium para el Hero Section
-  return 'https://images.unsplash.com/photo-1593079831268-3381b0db4a77?auto=format&fit=crop&q=80&w=1920';
+    try {
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const prompt = "Cinematic wide shot of a high-end luxury fitness studio in Cangas, modern industrial design, dark aesthetic with warm and red lighting, 4k.";
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: { parts: [{ text: prompt }] },
+            config: { imageConfig: { aspectRatio: "16:9" } }
+        });
+        
+        if (response.candidates?.[0]?.content?.parts) {
+          for (const part of response.candidates[0].content.parts) {
+              if (part.inlineData) {
+                return `data:image/png;base64,${part.inlineData.data}`;
+              }
+          }
+        }
+    } catch (e) {
+        console.error("Error hero image:", e);
+    }
+    return 'https://images.unsplash.com/photo-1593079831268-3381b0db4a77?auto=format&fit=crop&q=80&w=1920';
 }
