@@ -1,50 +1,55 @@
 
 import { GoogleGenAI } from "@google/genai";
 
+// Función auxiliar para obtener la IA de forma segura
+const getAIInstance = () => {
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    throw new Error("API_KEY no configurada. Por favor, asegúrate de que la variable de entorno esté presente.");
+  }
+  return new GoogleGenAI({ apiKey });
+};
+
 export async function generateFitnessAdvice(goal: string, activityLevel: string) {
-  // Inicializamos dentro de la función para asegurar que process.env.API_KEY esté disponible
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-  
-  const prompt = `Actúa como el Head Coach de Forza Cangas.
-  ATLETA: Nivel ${activityLevel}. 
-  OBJETIVO: ${goal}.
-
-  Genera un plan estratégico de alto impacto (150-200 palabras).
-  
-  REQUISITOS OBLIGATORIOS:
-  1. ANÁLISIS DEL OBJETIVO: Una valoración técnica para alguien de nivel ${activityLevel}.
-  2. PROGRAMA FORZA: 3 pilares de entrenamiento. PROHIBIDO usar la palabra 'Metcons'. Usa 'Acondicionamiento Metabólico' o 'Circuitos de Alta Intensidad'. Todo en español.
-  3. NUTRICIÓN: Un consejo nutricional clave.
-  4. CIERRE: Una frase motivadora potente con el espíritu de Cangas. NO incluyas títulos como "CIERRE MOTIVADOR", "MENSAJE FINAL" ni asteriscos de encabezado para esta frase; simplemente escríbela al final.
-
-  ESTILO: Profesional, experto, directo y en español puro.`;
-
   try {
+    const ai = getAIInstance();
+    
+    const prompt = `Actúa como el Head Coach de Forza Cangas (Cangas do Morrazo).
+    ATLETA: Nivel ${activityLevel}. 
+    OBJETIVO: ${goal}.
+
+    Genera un plan estratégico profesional y directo (máximo 200 palabras).
+    
+    REGLAS DE ORO:
+    1. ANÁLISIS TÉCNICO: Evaluación para nivel ${activityLevel}.
+    2. PROGRAMA FORZA: 3 pilares clave. PROHIBIDO usar la palabra 'Metcons'. Cámbiala por 'Entrenamiento de Acondicionamiento Metabólico' o 'Circuitos de Alta Intensidad'.
+    3. NUTRICIÓN: Un consejo de nutrición real.
+    4. MENSAJE FINAL: Termina con una frase potente y motivadora de Cangas. NO pongas el título "CIERRE MOTIVADOR" ni "MENSAJE FINAL". Solo escribe la frase al final del párrafo.
+
+    ESTILO: Todo en español de España, tono enérgico, experto y motivador.`;
+
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: prompt,
       config: {
         thinkingConfig: { thinkingBudget: 0 },
-        temperature: 0.7,
-        maxOutputTokens: 1000 // Suficiente para evitar que el texto se corte
+        temperature: 0.8,
+        maxOutputTokens: 800 
       }
     });
 
-    return response.text || "¡Atleta! Tu plan está listo. Vamos a darle duro en el box.";
+    return response.text || "¡Atleta! Tu plan está listo. Te esperamos en el box para empezar el cambio.";
   } catch (error) {
     console.error("Error en Coach AI:", error);
-    if (error.message?.includes("entity was not found")) {
-      // Si hay error de proyecto/llave, el sistema externo pedirá re-selección si fuera necesario
-    }
-    return `¡Atleta! Tu objetivo de "${goal}" es posible. En Forza Cangas tenemos la metodología para lograrlo. Pásate por el box de Cangas y diseñaremos tu rutina presencialmente para empezar hoy mismo. ¡Fuerza!`;
+    return `¡Atleta! Tu meta de "${goal}" es nuestra prioridad. Para evitar problemas técnicos de red, lo mejor es que vengas directamente a Forza Cangas. Evaluaremos tu nivel ${activityLevel} en persona y te daremos tu plan maestro de inmediato. ¡Fuerza!`;
   }
 }
 
 export async function generateGoalVisual(goal: string) {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-  const prompt = `Professional cinematic fitness photography, athlete achieving ${goal} in Forza Cangas gym, dramatic lighting, 8k.`;
-  
   try {
+    const ai = getAIInstance();
+    const prompt = `Professional sports photography, intense athlete focused on ${goal}, industrial luxury gym style, cinematic lighting, 8k.`;
+    
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-image',
       contents: {
@@ -69,9 +74,9 @@ export async function generateGoalVisual(goal: string) {
 }
 
 export async function generateHeroImage() {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-    const prompt = "Cinematic wide shot of a modern luxury industrial fitness studio, warm lighting, 4k.";
     try {
+        const ai = getAIInstance();
+        const prompt = "Cinematic interior of a high-end luxury gym in Cangas, modern equipment, dark aesthetic with red neon accents, 4k.";
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash-image',
             contents: { parts: [{ text: prompt }] },
