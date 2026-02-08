@@ -31,7 +31,8 @@ const AIConsultant: React.FC = () => {
       setResult({ advice, image });
     } catch (err: any) {
       console.error("Error al generar plan:", err);
-      setError("El Coach está analizando otros atletas. Por favor, reintenta en unos segundos.");
+      // Mostramos un mensaje profesional genérico si algo falla críticamente
+      setError("El sistema está saturado de atletas. Por favor, reintenta en unos instantes.");
     } finally {
       setLoading(false);
     }
@@ -62,7 +63,7 @@ const AIConsultant: React.FC = () => {
                   value={goal}
                   onChange={(e) => setGoal(e.target.value)}
                   placeholder="Ej: Aumentar masa muscular..."
-                  className="w-full bg-zinc-800 border border-white/5 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all text-white font-medium"
+                  className="w-full bg-zinc-800 border border-white/5 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all text-white font-medium placeholder:text-zinc-600"
                 />
               </div>
               
